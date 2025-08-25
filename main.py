@@ -4,7 +4,28 @@ from discord.ui import Button, View
 import os
 import io
 from datetime import datetime
+from flask import Flask
+from threading import Thread
 
+# ------------------------
+# Flask Server (Keep Alive)
+# ------------------------
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "✅ Bot is running!"
+
+def run():
+    app.run(host="0.0.0.0", port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# ------------------------
+# Discord Bot Setup
+# ------------------------
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
@@ -12,9 +33,8 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Change this to your ticket category name
 TICKET_CATEGORY_NAME = "TICKETS"
-LOG_CHANNEL_NAME = "ticket-logs"  # channel where transcripts are sent
+LOG_CHANNEL_NAME = "ticket-logs"  # where transcripts go
 
 
 @bot.event
@@ -132,8 +152,7 @@ async def on_interaction(interaction: discord.Interaction):
 
 
 # ------------------------
-# Run Bot
+# Keep Alive + Run Bot
 # ------------------------
+keep_alive()
 bot.run(os.getenv("DISCORD_TOKEN"))
-
-Code Made by GOOBER
